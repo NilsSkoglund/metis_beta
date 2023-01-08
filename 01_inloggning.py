@@ -3,8 +3,6 @@ import streamlit as st
 import time
 from tools import test_login_page
 
-st.write("hej")
-
 # Connect to Deta Base with your Project Key
 st.session_state["deta"] = Deta(st.secrets["deta_key"])
 
