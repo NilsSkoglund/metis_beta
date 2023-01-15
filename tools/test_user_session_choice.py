@@ -1,5 +1,6 @@
 import datetime
 import streamlit as st
+from zoneinfo import ZoneInfo
 from tools import test_database_interactions
 from streamlit_extras.switch_page_button import switch_page
 
@@ -12,7 +13,8 @@ def start_new_session():
 
     # Get string with time when session was started
     st.session_state["time_session_start_str"] =\
-        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        datetime.datetime.now(tz=ZoneInfo("Europe/Stockholm"))\
+            .strftime("%Y-%m-%d %H:%M:%S")
 
     # Get string with date when session was started
     st.session_state["date_today_str"] = str(datetime.date.today())
