@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
-from tools import dev_database_interactions
+from tools import test_database_interactions
 
 if "authentication_status" not in st.session_state:
     st.button("Logga in"
@@ -39,7 +39,7 @@ else:
     dct_perc = st.session_state["dct_perc"]
     name_perc = st.session_state["name_perc"]
 
-    dev_database_interactions.\
+    test_database_interactions.\
         set_session_state_for_questionnaire_from_db(name_perc)
 
     # create checkboxes
@@ -48,5 +48,5 @@ else:
         st.checkbox(
             j[0]\
             ,key=perc_x\
-            , on_change=dev_database_interactions.perc_update_db\
+            , on_change=test_database_interactions.perc_update_db\
             )
