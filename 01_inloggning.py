@@ -1,17 +1,15 @@
 from deta import Deta
 import streamlit as st
 import time
-from tools import test_login_page
+from tools import dev_login_page
+from tools import dev_init_session_state_vars
 
-# Connect to Deta Base with your Project Key
-st.session_state["deta"] = Deta(st.secrets["deta_key"])
-
-test_login_page.custom_authenticate()
+dev_init_session_state_vars.init_session_state()
+dev_login_page.custom_authenticate()
 
 if st.session_state["authentication_status"]:
     # litet hack för bättre ui/ux
     time.sleep(1)
-
     # frontend
     st.session_state["authenticator"].logout('Logout', 'main')
     # litet hack för bättre ui/ux
@@ -24,21 +22,27 @@ if st.session_state["authentication_status"]:
     st.session_state["db"] =\
     st.session_state["deta"].Base(st.session_state["username"])
 
-    test_login_page.custom_user_logged_in()
+    dev_login_page.custom_user_logged_in()
 
 # frontend
     # fel inloggningsuppgifter
 if st.session_state["authentication_status"] == False:
     st.error('Username/password is incorrect')
 
+    # frontend/backend
+    # användare väljar att registrera ny profil
+    # widget - new session state variable
+    st.checkbox("Registrera", key="register_user_v1")
+    if st.session_state["register_user_v1"]:
+        dev_login_page.custom_register_user()
 # frontend
     # ej angett inloggningsuppgifter
 if st.session_state["authentication_status"] == None:
     st.warning('Please enter your username and password')
 
     # frontend/backend
-        # användare väljar att registrera ny profil
-        # widget - new session state variable
-    st.checkbox("Registrera", key="register_user")
-    if st.session_state["register_user"]:
-        test_login_page.custom_register_user()
+    # användare väljar att registrera ny profil
+    # widget - new session state variable
+    st.checkbox("Registrera", key="register_user_v2")
+    if st.session_state["register_user_v2"]:
+        dev_login_page.custom_register_user()

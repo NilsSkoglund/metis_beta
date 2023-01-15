@@ -1,30 +1,12 @@
 import streamlit as st
 import time
 
-dct_wells = {
-        "Kliniska tecken på DVT": 3,
-        "Tidigare LE/DVT diagnos": 1.5,
-        "Hjärtfrekvens >100/min": 1.5,
-        "Hemoptys": 1,
-        "Immobiliserad i >3 dagar / Opererad senaste 4 v.": 1.5,
-        "LE mer sannolik än annan diagnos": 3,
-        "Malignitet behandlad inom 6 mån alt. palliation": 1
-        }
-name_wells = "wells"
-
-dct_perc = {
-    "Kliniska tecken på DVT": 1,
-    "Tidigare LE/DVT diagnos": 1,
-    "Hjärtfrekvens >100/min": 1,
-    "Hemoptys": 1,
-    "Immobiliserad i >3 dagar / Opererad senaste 4 v.": 1,
-    "Ålder ≥50": 1,
-    "Saturation >94% utan syrgas": 1,
-    "Östrogenbehandling": 1
-    }
-name_perc = "perc"
-
 def register_new_session_in_db():
+    dct_wells = st.session_state["dct_wells"]
+    name_wells = st.session_state["name_wells"]
+
+    dct_perc = st.session_state["dct_perc"]
+    name_perc = st.session_state["name_perc"]
     # Create temporary dict to use for updating db and include ...
         # date
         # session_starttime
@@ -74,6 +56,12 @@ def set_session_state_for_questionnaire_from_db(questionnaire):
         st.session_state[key] = value
 
 def wells_update_db():
+    dct_wells = st.session_state["dct_wells"]
+    name_wells = st.session_state["name_wells"]
+
+    dct_perc = st.session_state["dct_perc"]
+    name_perc = st.session_state["name_perc"]
+
     temp_dct_wells = {}
     for i, j in enumerate(dct_wells):
         key = f"{name_wells}_{i}"
@@ -103,6 +91,8 @@ def wells_update_db():
     time.sleep(0.5)
 
 def perc_update_db():
+    dct_perc = st.session_state["dct_perc"]
+    name_perc = st.session_state["name_perc"]
     temp_dct_perc = {}
     for i, j in enumerate(dct_perc):
         key = f"{name_perc}_{i}"
@@ -112,3 +102,52 @@ def perc_update_db():
                             {name_perc:temp_dct_perc}\
                             , key=st.session_state["db_session_key"])
     time.sleep(0.5)
+
+def get_config_cred():
+    db = st.session_state["deta"].Base("users_db")
+    items = get_all_items_from_db(db)
+
+    temp_dct = {}
+    for i in items:
+        key = i.get("key")
+        value = {"email": i.get("email")
+                    , "name": i.get("name")
+                    , "password": i.get("password")}
+        temp_dct[key] = value
+
+    return {"usernames": temp_dct}
+
+def get_list_usernames_in_db():
+    db = st.session_state["deta"].Base("users_db")
+    items = get_all_items_from_db(db)
+    usernames = [i.get("key") for i in items]
+    return usernames
+
+def get_username_new_user():
+    usernames_in_authenticator =\
+         st.session_state["authenticator"].credentials["usernames"].keys()
+    usernames_in_db = get_list_usernames_in_db()
+    new_user = set(usernames_in_authenticator)\
+                 - set(usernames_in_db)
+    new_user_list = list(new_user)
+
+    return new_user_list
+
+    
+def register_new_user_in_db():
+    '''
+    When a new user registers, enter their credentials in the database
+    The new_user_list should only contain the newly registered user...
+    ...but looping through a list adds some robustness to the code
+    '''
+    new_user_list = get_username_new_user()
+    if new_user_list:
+        db = st.session_state["deta"].Base("users_db")
+        for user in new_user_list: 
+            
+            user_credentials = st.session_state["authenticator"]\
+                            .credentials["usernames"]\
+                            [user]
+            db.put(user_credentials, key=user)
+    else:
+        pass

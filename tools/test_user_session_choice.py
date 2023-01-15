@@ -1,6 +1,6 @@
 import datetime
 import streamlit as st
-from tools import test_database_interactions
+from tools import dev_database_interactions
 from streamlit_extras.switch_page_button import switch_page
 
 # om användare har loggat in
@@ -23,8 +23,9 @@ def start_new_session():
                     )+1
     
     # Create session/primary key for db interactions
+    # database unique key - new session state variable
     st.session_state["db_session_key"] =\
-         f"{st.session_state['date_today_str']} {daily_session_no}" # database unique key - new session state variable
+         f"{st.session_state['date_today_str']} {daily_session_no}"
 
     # Create user friendly generic name for session
     # name for session - new session state variable
@@ -38,37 +39,35 @@ def start_new_session():
         , key = "session_name_from_user") # widget - new session state variable
 
     # If user decides to write their own name
-    if st.session_state["session_name_from_user"]: # session state variable
+    if st.session_state["session_name_from_user"]:
             st.session_state["session_name"] =\
-                 st.session_state["session_name_from_user"] # session state variable
-            st.info(f"Tryck gå vidare för att påbörja sessionen.\
-                 Sessionen sparas som:\
+                 st.session_state["session_name_from_user"]
+            st.info(f"Sessionen sparas som:\
                  {st.session_state['session_name']}\
                  | {st.session_state['time_session_start_str']}")
     
     # If user decides to keep the generic name
     else:
-        st.info(f"Tryck gå vidare för att påbörja sessionen.\
-                Session sparas som:\
+        st.info(f"Session sparas som:\
                 Patient nummer {daily_session_no} för dagen\
                 | {st.session_state['time_session_start_str']}]")
     
     # User is done and presses a button to enter the session / go to next page
-    st.button("Gå vidare", key="new_session_next_page") # widget - new session state variable
+     # widget - new session state variable
+    st.button("Gå vidare", key="new_session_next_page")
 
     # if user presses button, we want to write info for new session to db ...
     # before entering the session / going to the next page
     if st.session_state["new_session_next_page"]:
         # call function to create record of session in db
-        test_database_interactions.register_new_session_in_db()
-        st.write("Haj")
+        dev_database_interactions.register_new_session_in_db()
 
         # Finished, move on to page 2 with wells
         switch_page("wells")
 
 def continue_most_recent_session():
     # get all records from db
-    all_items = test_database_interactions.\
+    all_items = dev_database_interactions.\
                 get_all_items_from_db(st.session_state["db"])
 
     if len(all_items) == 0:
@@ -94,7 +93,7 @@ def continue_most_recent_session():
 
 
 def choose_session_from_list():
-    all_items = test_database_interactions.\
+    all_items = dev_database_interactions.\
         get_all_items_from_db(st.session_state["db"])
     if len(all_items) == 0:
         st.info("Det finns inga sessioner kopplade till denna användare.\
@@ -118,7 +117,7 @@ def choose_session_from_list():
             if label != "Se alternativ":
                 name = label[1]
                 starttime = label[2]
-                return f"{name} | Starttid: {starttime}"
+                return f"{name} | {starttime}"
             else:
                 return label
 

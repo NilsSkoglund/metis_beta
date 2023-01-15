@@ -1,18 +1,6 @@
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
-from tools import test_database_interactions
-
-dct_wells = {
-    "Kliniska tecken på DVT": 3,
-    "Tidigare LE/DVT diagnos": 1.5,
-    "Hjärtfrekvens >100/min": 1.5,
-    "Hemoptys": 1,
-    "Immobiliserad i >3 dagar / Opererad senaste 4 v.": 1.5,
-    "LE mer sannolik än annan diagnos": 3,
-    "Malignitet behandlad inom 6 mån alt. palliation": 1
-    }
-name_wells = "wells"
-
+from tools import dev_database_interactions
 
 if "authentication_status" not in st.session_state:
     st.button("Logga in"
@@ -39,7 +27,10 @@ else:
                             .get(st.session_state['db_session_key'])\
                             .get("starttime"))
 
-    test_database_interactions.\
+    dct_wells = st.session_state["dct_wells"]
+    name_wells = st.session_state["name_wells"]
+
+    dev_database_interactions.\
         set_session_state_for_questionnaire_from_db(name_wells)
     
     st.header("Formulär: Wells' Lungemboli")
@@ -48,6 +39,5 @@ else:
         st.checkbox(
             j[0]\
             ,key=wells_x\
-            , on_change=test_database_interactions.wells_update_db\
-            #, args=(lungemboli_x,)\
+            , on_change=dev_database_interactions.wells_update_db\
             )

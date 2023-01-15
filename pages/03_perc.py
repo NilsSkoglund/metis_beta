@@ -1,20 +1,6 @@
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
-from tools import test_database_interactions
-
-
-dct_perc = {
-    "Kliniska tecken på DVT": 1,
-    "Tidigare LE/DVT diagnos": 1,
-    "Hjärtfrekvens >100/min": 1,
-    "Hemoptys": 1,
-    "Immobiliserad i >3 dagar / Opererad senaste 4 v.": 1,
-    "Ålder ≥50": 1,
-    "Saturation >94% utan syrgas": 1,
-    "Östrogenbehandling": 1
-    }
-name_perc = "perc"
-
+from tools import dev_database_interactions
 
 if "authentication_status" not in st.session_state:
     st.button("Logga in"
@@ -41,6 +27,8 @@ else:
                             .get(st.session_state['db_session_key'])\
                             .get("starttime"))
 
+    
+
     with st.expander("Klicka för info"):
         st.info("5 av 8 frågor i PERC ingår i Wells' kriterier för lungemboli.\
         När dessa frågor besvaras i formuläret för Wells'\
@@ -48,7 +36,10 @@ else:
 
     st.header("Formulär: PERC")
 
-    test_database_interactions.\
+    dct_perc = st.session_state["dct_perc"]
+    name_perc = st.session_state["name_perc"]
+
+    dev_database_interactions.\
         set_session_state_for_questionnaire_from_db(name_perc)
 
     # create checkboxes
@@ -57,6 +48,5 @@ else:
         st.checkbox(
             j[0]\
             ,key=perc_x\
-            , on_change=test_database_interactions.perc_update_db\
-            #, args=(lungemboli_x,)\
+            , on_change=dev_database_interactions.perc_update_db\
             )
