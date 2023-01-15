@@ -17,7 +17,8 @@ def start_new_session():
             .strftime("%Y-%m-%d %H:%M:%S")
 
     # Get string with date when session was started
-    st.session_state["date_today_str"] = str(datetime.date.today())
+    st.session_state["date_today_str"] = str(datetime.datetime\
+        .now(tz=ZoneInfo("Europe/Stockholm")).date())
 
     # Count number of previous sessions today and add 1
     daily_session_no = len(st.session_state["db"]\
