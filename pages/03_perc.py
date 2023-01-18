@@ -1,7 +1,12 @@
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
 from tools import test_database_interactions
+from PIL import Image
 
+with st.sidebar:
+    image = Image.open(f"pages/tågstationer perc.png")
+    st.image(image)
+    
 if "authentication_status" not in st.session_state:
     st.button("Logga in"
                 , key = "login_page3")
