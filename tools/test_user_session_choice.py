@@ -53,7 +53,7 @@ def start_new_session():
     else:
         st.info(f"Session sparas som:\
                 Patient nummer {daily_session_no} för dagen\
-                | {st.session_state['time_session_start_str']}]")
+                | {st.session_state['time_session_start_str']}")
     
     # User is done and presses a button to enter the session / go to next page
      # widget - new session state variable
